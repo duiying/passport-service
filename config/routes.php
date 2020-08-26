@@ -15,3 +15,9 @@ use HyperfPlus\Route\Route;
 use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'HyperfPlus\Controller\IndexController@handle');
+
+/**
+ * 角色模块
+ */
+Router::addRoute(['GET'], '/v1/role/search', Route::decoration('Role\Action\SearchAction'));
+Router::addRoute(['POST'], '/v1/role/create', Route::decoration('Role\Action\CreateAction'));
