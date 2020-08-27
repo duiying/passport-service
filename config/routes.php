@@ -21,3 +21,10 @@ Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'HyperfPlus\Controller\IndexContr
  */
 Router::addRoute(['GET'], '/v1/role/search', Route::decoration('Role\Action\SearchAction'));
 Router::addRoute(['POST'], '/v1/role/create', Route::decoration('Role\Action\CreateAction'));
+
+
+/**
+ * 管理员模块
+ */
+Router::addRoute(['GET'], '/v1/user/search', Route::decoration('User\Action\SearchAction'));
+Router::addRoute(['POST'], '/v1/user/create', Route::decoration('User\Action\CreateAction'));
