@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Module\User\Action;
+namespace App\Module\Menu\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
 use HyperfPlus\Constant\Constant;
-use App\Module\User\Logic\UserLogic;
+use App\Module\Menu\Logic\MenuLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
@@ -15,7 +15,7 @@ class SearchAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var UserLogic
+     * @var MenuLogic
      */
     private $logic;
 
@@ -27,14 +27,13 @@ class SearchAction extends AbstractController
 
     private $rules = [
         'p'             => 'integer|min:1',
-        'size'          => 'integer|min:1|max:20',
-        'id'            => 'integer',
-        'name'          => 'string',
-        'email'         => 'string',
-        'mobile'        => 'string',
-        'position'      => 'string',
-        'password'      => 'string',
-        'status'        => 'integer',
+        'size'          => 'integer|min:1',
+        'id'          => 'integer',
+        'pid'         => 'integer',
+        'name'        => 'string',
+        'icon'        => 'string',
+        'url'         => 'string',
+        'status'      => 'integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)

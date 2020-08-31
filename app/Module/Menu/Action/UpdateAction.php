@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Module\User\Action;
+namespace App\Module\Menu\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\User\Logic\UserLogic;
+use App\Module\Menu\Logic\MenuLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
-class UpdateFieldAction extends AbstractController
+class UpdateAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var UserLogic
+     * @var MenuLogic
      */
     private $logic;
 
@@ -25,8 +25,11 @@ class UpdateFieldAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'        => 'required|integer',
-        'status'    => 'integer',
+        'id'          => 'required|integer',
+        'pid'         => 'required|integer',
+        'name'        => 'required|string',
+        'icon'        => 'required|string',
+        'url'         => 'required|string',
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -38,7 +41,7 @@ class UpdateFieldAction extends AbstractController
 
         $requestData['mtime'] = date('Y-m-d H:i:s');
 
-        $res = $this->logic->updateField($requestData);
+        $res = $this->logic->update($requestData);
         return $response->success($res);
     }
 }

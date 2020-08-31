@@ -31,3 +31,12 @@ Router::addRoute(['GET'], '/v1/user/find', Route::decoration('User\Action\FindAc
 Router::addRoute(['POST'], '/v1/user/create', Route::decoration('User\Action\CreateAction'));
 Router::addRoute(['POST'], '/v1/user/update', Route::decoration('User\Action\UpdateAction'));
 Router::addRoute(['POST'], '/v1/user/update_field', Route::decoration('User\Action\UpdateFieldAction'));
+
+/**
+ * 菜单模块
+ */
+Router::addRoute(['GET'], '/v1/menu/search', Route::decoration('Menu\Action\SearchAction'));
+Router::addRoute(['GET'], '/v1/menu/find', Route::decoration('Menu\Action\FindAction'));
+Router::addRoute(['POST'], '/v1/menu/create', Route::decoration('Menu\Action\CreateAction'));
+Router::addRoute(['POST'], '/v1/menu/update', Route::decoration('Menu\Action\UpdateAction'));
+Router::addRoute(['POST'], '/v1/menu/update_field', Route::decoration('Menu\Action\UpdateFieldAction'));

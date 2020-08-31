@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Module\User\Action;
+namespace App\Module\Menu\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\User\Logic\UserLogic;
+use App\Module\Menu\Logic\MenuLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
@@ -14,7 +14,7 @@ class UpdateFieldAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var UserLogic
+     * @var MenuLogic
      */
     private $logic;
 
@@ -25,8 +25,7 @@ class UpdateFieldAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'        => 'required|integer',
-        'status'    => 'integer',
+        'id' => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)
