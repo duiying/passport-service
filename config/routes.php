@@ -27,4 +27,6 @@ Router::addRoute(['POST'], '/v1/role/create', Route::decoration('Role\Action\Cre
  * 管理员模块
  */
 Router::addRoute(['GET'], '/v1/user/search', Route::decoration('User\Action\SearchAction'));
+Router::addRoute(['GET'], '/v1/user/find', Route::decoration('User\Action\FindAction'));
 Router::addRoute(['POST'], '/v1/user/create', Route::decoration('User\Action\CreateAction'));
+Router::addRoute(['POST'], '/v1/user/update', Route::decoration('User\Action\UpdateAction'));
