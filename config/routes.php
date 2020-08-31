@@ -30,3 +30,4 @@ Router::addRoute(['GET'], '/v1/user/search', Route::decoration('User\Action\Sear
 Router::addRoute(['GET'], '/v1/user/find', Route::decoration('User\Action\FindAction'));
 Router::addRoute(['POST'], '/v1/user/create', Route::decoration('User\Action\CreateAction'));
 Router::addRoute(['POST'], '/v1/user/update', Route::decoration('User\Action\UpdateAction'));
+Router::addRoute(['POST'], '/v1/user/update_field', Route::decoration('User\Action\UpdateFieldAction'));
