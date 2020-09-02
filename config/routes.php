@@ -40,3 +40,12 @@ Router::addRoute(['GET'], '/v1/menu/find', Route::decoration('Menu\Action\FindAc
 Router::addRoute(['POST'], '/v1/menu/create', Route::decoration('Menu\Action\CreateAction'));
 Router::addRoute(['POST'], '/v1/menu/update', Route::decoration('Menu\Action\UpdateAction'));
 Router::addRoute(['POST'], '/v1/menu/update_field', Route::decoration('Menu\Action\UpdateFieldAction'));
+
+/**
+ * 权限模块
+ */
+Router::addRoute(['GET'], '/v1/permission/search', Route::decoration('Permission\Action\SearchAction'));
+Router::addRoute(['GET'], '/v1/permission/find', Route::decoration('Permission\Action\FindAction'));
+Router::addRoute(['POST'], '/v1/permission/create', Route::decoration('Permission\Action\CreateAction'));
+Router::addRoute(['POST'], '/v1/permission/update', Route::decoration('Permission\Action\UpdateAction'));
+Router::addRoute(['POST'], '/v1/permission/update_field', Route::decoration('Permission\Action\UpdateFieldAction'));
