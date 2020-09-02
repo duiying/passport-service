@@ -2,6 +2,7 @@
 
 namespace App\Module\Role\Action;
 
+use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
 use App\Module\Role\Logic\RoleLogic;
 use Hyperf\Di\Annotation\Inject;
@@ -24,8 +25,7 @@ class FindAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'            => 'integer',
-        'name'          => 'string'
+        'id' => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -33,6 +33,7 @@ class FindAction extends AbstractController
         // 参数校验
         $requestData = $request->all();
         $this->validationFactory->make($requestData, $this->rules)->validate();
+        $requestData = Util::sanitize($requestData, $this->rules);
 
         $res = $this->logic->find($requestData);
         return $response->success($res);

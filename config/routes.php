@@ -17,13 +17,6 @@ use Hyperf\HttpServer\Router\Router;
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'HyperfPlus\Controller\IndexController@handle');
 
 /**
- * 角色模块
- */
-Router::addRoute(['GET'], '/v1/role/search', Route::decoration('Role\Action\SearchAction'));
-Router::addRoute(['POST'], '/v1/role/create', Route::decoration('Role\Action\CreateAction'));
-
-
-/**
  * 管理员模块
  */
 Router::addRoute(['GET'], '/v1/user/search', Route::decoration('User\Action\SearchAction'));
@@ -49,3 +42,12 @@ Router::addRoute(['GET'], '/v1/permission/find', Route::decoration('Permission\A
 Router::addRoute(['POST'], '/v1/permission/create', Route::decoration('Permission\Action\CreateAction'));
 Router::addRoute(['POST'], '/v1/permission/update', Route::decoration('Permission\Action\UpdateAction'));
 Router::addRoute(['POST'], '/v1/permission/update_field', Route::decoration('Permission\Action\UpdateFieldAction'));
+
+/**
+ * 角色模块
+ */
+Router::addRoute(['GET'], '/v1/role/search', Route::decoration('Role\Action\SearchAction'));
+Router::addRoute(['GET'], '/v1/role/find', Route::decoration('Role\Action\FindAction'));
+Router::addRoute(['POST'], '/v1/role/create', Route::decoration('Role\Action\CreateAction'));
+Router::addRoute(['POST'], '/v1/role/update', Route::decoration('Role\Action\UpdateAction'));
+Router::addRoute(['POST'], '/v1/role/update_field', Route::decoration('Role\Action\UpdateFieldAction'));

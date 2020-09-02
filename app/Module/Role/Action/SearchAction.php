@@ -2,6 +2,7 @@
 
 namespace App\Module\Role\Action;
 
+use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
 use HyperfPlus\Constant\Constant;
 use App\Module\Role\Logic\RoleLogic;
@@ -26,9 +27,11 @@ class SearchAction extends AbstractController
 
     private $rules = [
         'p'             => 'integer|min:1',
-        'size'          => 'integer|min:1|max:20',
+        'size'          => 'integer|min:1',
         'id'            => 'integer',
-        'name'          => 'string'
+        'name'          => 'string',
+        'admin'         => 'integer',
+        'status'        => 'integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -36,6 +39,7 @@ class SearchAction extends AbstractController
         // 参数校验
         $requestData = $request->all();
         $this->validationFactory->make($requestData, $this->rules)->validate();
+        $requestData = Util::sanitize($requestData, $this->rules);
 
         $p      = isset($requestData['p']) ? $requestData['p'] : Constant::DEFAULT_PAGE;
         $size   = isset($requestData['size']) ? $requestData['size'] : Constant::DEFAULT_SIZE;

@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS `t_passport_role`;
 CREATE TABLE `t_passport_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '角色名称',
+  `admin` tinyint(4) NOT NULL DEFAULT '0' COMMENT '超级管理员 {0：否；1：是；}',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态 {-1：删除；1：正常；}',
   `mtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),

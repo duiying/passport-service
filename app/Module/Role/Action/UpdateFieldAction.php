@@ -10,7 +10,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
-class UpdateAction extends AbstractController
+class UpdateFieldAction extends AbstractController
 {
     /**
      * @Inject()
@@ -25,9 +25,7 @@ class UpdateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'            => 'required|integer',
-        'name'          => 'required|string',
-        'admin'         => 'integer'
+        'id' => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -39,7 +37,7 @@ class UpdateAction extends AbstractController
 
         $requestData['mtime'] = date('Y-m-d H:i:s');
 
-        $res = $this->logic->update($requestData);
+        $res = $this->logic->updateField($requestData);
         return $response->success($res);
     }
 }
