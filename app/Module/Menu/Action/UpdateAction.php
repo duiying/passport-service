@@ -30,6 +30,7 @@ class UpdateAction extends AbstractController
         'name'        => 'required|string',
         'icon'        => 'required|string',
         'url'         => 'required|string',
+        'sort'        => 'integer|min:1|max:999',
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -38,8 +39,6 @@ class UpdateAction extends AbstractController
         $requestData = $request->all();
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
-
-        $requestData['mtime'] = date('Y-m-d H:i:s');
 
         $res = $this->logic->update($requestData);
         return $response->success($res);

@@ -26,14 +26,7 @@ class SearchAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'p'             => 'integer|min:1',
-        'size'          => 'integer|min:1',
-        'id'          => 'integer',
-        'pid'         => 'integer',
-        'name'        => 'string',
-        'icon'        => 'string',
-        'url'         => 'string',
-        'status'      => 'integer'
+        'pid' => 'integer',
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -43,12 +36,7 @@ class SearchAction extends AbstractController
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
 
-        $p      = isset($requestData['p']) ? $requestData['p'] : Constant::DEFAULT_PAGE;
-        $size   = isset($requestData['size']) ? $requestData['size'] : Constant::DEFAULT_SIZE;
-        if (isset($requestData['p']))       unset($requestData['p']);
-        if (isset($requestData['size']))    unset($requestData['size']);
-
-        $res = $this->logic->search($requestData, $p, $size);
+        $res = $this->logic->search($requestData);
         return $response->success($res);
     }
 }

@@ -29,6 +29,7 @@ class CreateAction extends AbstractController
         'name'        => 'required|string',
         'icon'        => 'required|string',
         'url'         => 'required|string',
+        'sort'        => 'integer|min:1|max:999',
     ];
 
     public function handle(RequestInterface $request, Response $response)

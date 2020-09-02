@@ -2,6 +2,8 @@
 
 namespace App\Module\Menu\Logic;
 
+use App\Module\Menu\Constant\MenuConstant;
+use HyperfPlus\Log\StdoutLog;
 use HyperfPlus\Util\Util;
 use Hyperf\Di\Annotation\Inject;
 use App\Module\Menu\Service\MenuService;
@@ -62,11 +64,32 @@ class MenuLogic
      * @param $size
      * @return array
      */
-    public function search($requestData, $p, $size)
+    public function search($requestData)
     {
-         $list  = $this->service->search($requestData, $p, $size);
-         $total = $this->service->count($requestData);
-         return Util::formatSearchRes($p, $size, $total, $list);
+        // 一级菜单列表
+        if (isset($requestData['pid'])) {
+            $classAMenuList = $this->service->search(['pid' => 0, 'status' => MenuConstant::MENU_STATUS_NORMAL]);
+            return ['list' => $classAMenuList];
+        }
+
+        // 一级菜单列表
+        $classAMenuList     = $this->service->search(['pid' => 0]);
+        // 二级菜单列表
+        $classBMenuList     = $this->service->search(['pid' => ['>', 0]]);
+
+        if (empty($classAMenuList)) return [];
+
+        foreach ($classAMenuList as $classAMenuKey => $classAMenuVal) {
+            $classAMenuList[$classAMenuKey]['sub_menu_list'] = [];
+
+            foreach ($classBMenuList as $classBMenuKey => $classBMenuVal) {
+                if ($classBMenuVal['pid'] == $classAMenuVal['id']) {
+                    $classAMenuList[$classAMenuKey]['sub_menu_list'][] = $classBMenuVal;
+                }
+            }
+        }
+
+        return ['list' => $classAMenuList];
     }
 
     /**

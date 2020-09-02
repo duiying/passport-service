@@ -35,6 +35,7 @@ CREATE TABLE `t_passport_menu` (
   `icon` varchar(50) NOT NULL DEFAULT '' COMMENT '菜单图标',
   `url` varchar(50) NOT NULL DEFAULT '' COMMENT '路由',
   `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态 {-1：删除；1：正常；}',
+  `sort` int(10) NOT NULL DEFAULT '99' COMMENT '排序（正序）',
   `mtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
