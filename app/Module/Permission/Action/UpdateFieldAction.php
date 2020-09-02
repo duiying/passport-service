@@ -25,7 +25,8 @@ class UpdateFieldAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id' => 'required|integer'
+        'id'        => 'required|integer',
+        'status'    => 'integer',
     ];
 
     public function handle(RequestInterface $request, Response $response)

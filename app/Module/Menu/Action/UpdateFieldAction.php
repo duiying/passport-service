@@ -37,6 +37,8 @@ class UpdateFieldAction extends AbstractController
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
 
+        $requestData['mtime'] = date('Y-m-d H:i:s');
+
         $res = $this->logic->updateField($requestData);
         return $response->success($res);
     }

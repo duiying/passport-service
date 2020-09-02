@@ -66,6 +66,9 @@ class PermissionLogic
     {
          $list  = $this->service->search($requestData, $p, $size);
          $total = $this->service->count($requestData);
+         foreach ($list as $k => $v) {
+            $list[$k]['url_list'] = !empty($v['url']) ? explode(';', $v['url']) : [];
+         }
          return Util::formatSearchRes($p, $size, $total, $list);
     }
 
