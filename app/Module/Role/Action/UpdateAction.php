@@ -28,7 +28,8 @@ class UpdateAction extends AbstractController
         'id'            => 'required|integer',
         'name'          => 'required|string',
         'admin'         => 'required|integer',
-        'sort'          => 'integer|min:1|max:999'
+        'sort'          => 'integer|min:1|max:999',
+        'permission_id' => 'string',
     ];
 
     public function handle(RequestInterface $request, Response $response)
