@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Module\Role\Action;
+namespace App\Module\RolePermission\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\Role\Logic\RoleLogic;
+use App\Module\RolePermission\Logic\RolePermissionLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
@@ -14,7 +14,7 @@ class UpdateAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var RoleLogic
+     * @var RolePermissionLogic
      */
     private $logic;
 
@@ -25,10 +25,9 @@ class UpdateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'            => 'required|integer',
-        'name'          => 'required|string',
-        'admin'         => 'required|integer',
-        'sort'          => 'integer|min:1|max:999'
+        'id'                    => 'required|integer',
+        'role_id'               => 'required|integer',
+        'permission_id'         => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)

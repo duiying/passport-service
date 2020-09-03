@@ -26,7 +26,9 @@ class CreateAction extends AbstractController
 
     private $rules = [
         'name'          => 'required|string',
-        'admin'         => 'integer'
+        'admin'         => 'required|integer',
+        'sort'          => 'integer|min:1|max:999',
+        'permission_id' => 'string',
     ];
 
     public function handle(RequestInterface $request, Response $response)

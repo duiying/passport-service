@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Module\Role\Action;
+namespace App\Module\RolePermission\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\Role\Logic\RoleLogic;
+use App\Module\RolePermission\Logic\RolePermissionLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
-class UpdateAction extends AbstractController
+class CreateAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var RoleLogic
+     * @var RolePermissionLogic
      */
     private $logic;
 
@@ -25,10 +25,8 @@ class UpdateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'            => 'required|integer',
-        'name'          => 'required|string',
-        'admin'         => 'required|integer',
-        'sort'          => 'integer|min:1|max:999'
+        'role_id'               => 'required|integer',
+        'permission_id'         => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -38,9 +36,7 @@ class UpdateAction extends AbstractController
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
 
-        $requestData['mtime'] = date('Y-m-d H:i:s');
-
-        $res = $this->logic->update($requestData);
+        $res = $this->logic->create($requestData);
         return $response->success($res);
     }
 }
