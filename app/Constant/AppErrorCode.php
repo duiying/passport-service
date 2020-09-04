@@ -31,6 +31,16 @@ class AppErrorCode extends AbstractConstants
      */
     const ROLE_NOT_EXIST_ERROR = 3000002;
 
+    /**
+     * @Message("超级管理员不允许修改！")
+     */
+    const ROLE_ADMIN_UPDATE_ERROR = 3000003;
+
+    /**
+     * @Message("角色名称已存在！")
+     */
+    const ROLE_NAME_REPEAT_ERROR = 3000004;
+
     /******************** 角色模块错误码 end *****************************************************************************/
 
     /******************** 权限模块错误码 begin 3000101 ~ 3000200 *********************************************************/

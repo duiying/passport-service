@@ -105,8 +105,8 @@ class RoleService
      * @param array $roleIdList
      * @return array
      */
-    public function getRolePermissionById($roleIdList = [])
+    public function getRolePermissionByIdList($roleIdList = [])
     {
-        return $this->dao->getRolePermissionById($roleIdList);
+        return $this->dao->getRolePermissionByIdList($roleIdList);
     }
 }

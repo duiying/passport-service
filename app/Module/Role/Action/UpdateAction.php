@@ -27,7 +27,6 @@ class UpdateAction extends AbstractController
     private $rules = [
         'id'            => 'required|integer',
         'name'          => 'required|string',
-        'admin'         => 'required|integer',
         'sort'          => 'integer|min:1|max:999',
         'permission_id' => 'string',
     ];

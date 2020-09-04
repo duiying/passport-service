@@ -5,6 +5,7 @@ namespace App\Module\Role\Logic;
 use App\Constant\AppErrorCode;
 use App\Module\Permission\Constant\PermissionConstant;
 use App\Module\Permission\Service\PermissionService;
+use App\Module\Role\Constant\RoleConstant;
 use App\Module\RolePermission\Constant\RolePermissionConstant;
 use App\Module\RolePermission\Service\RolePermissionService;
 use HyperfPlus\Exception\AppException;
@@ -34,11 +35,50 @@ class RoleLogic
      */
     private $permissionService;
 
+    /**
+     * 检查角色名称是否重复
+     *
+     * @param $name
+     * @param int $id
+     */
+    public function checkNameRepeat($name, $id = 0)
+    {
+        $role = $this->service->getLineByWhere(['name' => $name, 'status' => RoleConstant::ROLE_STATUS_NORMAL]);
+        if (empty($role)) return;
+        if ($role['id'] != $id) throw new AppException(AppErrorCode::ROLE_NAME_REPEAT_ERROR);
+    }
+
+    /**
+     * 检查角色是否存在并返回
+     *
+     * @param $id
+     * @return array
+     */
+    public function checkRole($id)
+    {
+        $role = $this->service->getLineByWhere(['id' => $id, 'status' => RoleConstant::ROLE_STATUS_NORMAL]);
+        if (empty($role)) throw new AppException(AppErrorCode::ROLE_NOT_EXIST_ERROR);
+        return $role;
+    }
+
+    /**
+     * 超级管理员角色不允许更新
+     *
+     * @param $admin
+     */
+    public function checkAdmin($admin)
+    {
+        if ($admin == RoleConstant::ADMIN_YES) throw new AppException(AppErrorCode::ROLE_ADMIN_UPDATE_ERROR);
+    }
+
     public function create($requestData)
     {
         $permissionId       = isset($requestData['permission_id']) ? $requestData['permission_id'] : '';
         $permissionIdArr    = Util::ids2IdArr($permissionId);
         if (isset($requestData['permission_id'])) unset($requestData['permission_id']);
+
+        // 检查角色名称是否重复
+        $this->checkNameRepeat($requestData['name']);
 
         $this->service->beginTransaction();
 
@@ -78,6 +118,13 @@ class RoleLogic
     {
         $id = $requestData['id'];
         unset($requestData['id']);
+
+        // 检查角色是否存在
+        $role = $this->checkRole($id);
+        // 超级管理员角色不允许更新
+        $this->checkAdmin($role['admin']);
+        // 检查角色名称是否重复
+        $this->checkNameRepeat($requestData['name'], $id);
 
         $permissionId       = isset($requestData['permission_id']) ? $requestData['permission_id'] : '';
         $permissionIdArr    = Util::ids2IdArr($permissionId);
@@ -128,6 +175,14 @@ class RoleLogic
     {
         $id = $requestData['id'];
         unset($requestData['id']);
+
+        // 检查角色是否存在
+        $role = $this->checkRole($id);
+        // 超级管理员角色不允许更新
+        $this->checkAdmin($role['admin']);
+        // 检查角色名称是否重复
+        if (isset($requestData['name'])) $this->checkNameRepeat($requestData['name'], $id);
+
         return $this->service->update(['id' => $id], $requestData);
     }
 
@@ -141,8 +196,26 @@ class RoleLogic
      */
     public function search($requestData, $p, $size)
     {
-         $list  = $this->service->search($requestData, $p, $size);
+         $list  = $this->service->search($requestData, $p, $size, ['*'], ['admin' => 'desc', 'sort' => 'asc']);
          $total = $this->service->count($requestData);
+
+         $roleIdList = empty($list) ? [] : array_column($list, 'id');
+
+         // 角色对应的权限
+         $permissionListGroupByRoleId = [];
+         if (!empty($roleIdList)) {
+             $permissionList = $this->service->getRolePermissionByIdList($roleIdList);
+             if (!empty($permissionList)) {
+                 foreach ($permissionList as $k => $v) {
+                     $permissionListGroupByRoleId[$v['role_id']][] = $v;
+                 }
+             }
+         }
+
+         foreach ($list as $k => $v) {
+             $list[$k]['permission_list'] = isset($permissionListGroupByRoleId[$v['id']]) ? $permissionListGroupByRoleId[$v['id']] : [];
+         }
+
          return Util::formatSearchRes($p, $size, $total, $list);
     }
 
@@ -155,11 +228,10 @@ class RoleLogic
     public function find($requestData)
     {
         $id     = $requestData['id'];
-        $role   = $this->service->getLineByWhere($requestData);
-        if (empty($role)) throw new AppException(AppErrorCode::ROLE_NOT_EXIST_ERROR);
+        $role   = $this->checkRole($id);
 
         // 查找角色对应的权限
-        $role['permission_list'] = $this->service->getRolePermissionById([$id]);
+        $role['permission_list'] = $this->service->getRolePermissionByIdList([$id]);
 
         return $role;
     }

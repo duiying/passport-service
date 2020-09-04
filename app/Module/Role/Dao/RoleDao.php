@@ -20,14 +20,13 @@ class RoleDao extends MySQLDao
      * @param array $roleIdList
      * @return array
      */
-    public function getRolePermissionById($roleIdList = [])
+    public function getRolePermissionByIdList($roleIdList = [])
     {
-        $sql = 'select a.permission_id,b.name,b.url from t_passport_role_permission a 
+        $sql = "select a.role_id,a.permission_id,b.name,b.url from t_passport_role_permission a 
 left join t_passport_permission b on a.permission_id = b.id
-where a.role_id in (?) and a.status = ? and b.status = ? order by b.sort asc';
+where a.role_id in (" . implode(',', $roleIdList) . ") and a.status = ? and b.status = ? order by b.sort asc";
 
         $list = Db::connection($this->connection)->select($sql, [
-            implode(',', $roleIdList),
             RolePermissionConstant::ROLE_PERMISSION_STATUS_NORMAL,
             PermissionConstant::PERMISSION_STATUS_NORMAL
         ]);
