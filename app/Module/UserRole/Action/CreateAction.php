@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Module\User\Action;
+namespace App\Module\UserRole\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\User\Logic\UserLogic;
+use App\Module\UserRole\Logic\UserRoleLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
@@ -14,7 +14,7 @@ class CreateAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var UserLogic
+     * @var UserRoleLogic
      */
     private $logic;
 
@@ -25,12 +25,8 @@ class CreateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'name'          => 'required|string',
-        'email'         => 'required|string',
-        'mobile'        => 'required|string',
-        'position'      => 'required|string',
-        'password'      => 'required|string',
-        'role_id'       => 'string',
+        'user_id'       => 'required|integer',
+        'role_id'       => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)

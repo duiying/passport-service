@@ -98,15 +98,4 @@ class RoleService
     {
         return $this->dao->count($where);
     }
-
-    /**
-     * 查找角色对应权限
-     *
-     * @param array $roleIdList
-     * @return array
-     */
-    public function getRolePermissionByIdList($roleIdList = [])
-    {
-        return $this->dao->getRolePermissionByIdList($roleIdList);
-    }
 }

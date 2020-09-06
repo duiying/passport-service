@@ -4,6 +4,7 @@ namespace App\Module\Role\Logic;
 
 use App\Constant\AppErrorCode;
 use App\Module\Permission\Constant\PermissionConstant;
+use App\Module\Permission\Logic\PermissionLogic;
 use App\Module\Permission\Service\PermissionService;
 use App\Module\Role\Constant\RoleConstant;
 use App\Module\RolePermission\Constant\RolePermissionConstant;
@@ -34,6 +35,12 @@ class RoleLogic
      * @var PermissionService
      */
     private $permissionService;
+
+    /**
+     * @Inject()
+     * @var PermissionLogic
+     */
+    private $permissionLogic;
 
     /**
      * 检查角色名称是否重复
@@ -90,8 +97,7 @@ class RoleLogic
             if (!empty($permissionIdArr)) {
                 foreach ($permissionIdArr as $k => $v) {
                     // 检查权限是否已删除
-                    $permission = $this->permissionService->getLineByWhere(['id' => $v, 'status' => PermissionConstant::PERMISSION_STATUS_NORMAL]);
-                    if (empty($permission)) throw new AppException(AppErrorCode::PERMISSION_NOT_EXIST_ERROR);
+                    $this->permissionLogic->checkPermission($v);
 
                     // 创建角色权限
                     $this->rolePermissionService->create(['role_id' => $roleId, 'permission_id' => $v]);
@@ -196,15 +202,16 @@ class RoleLogic
      */
     public function search($requestData, $p, $size)
     {
-         $list  = $this->service->search($requestData, $p, $size, ['*'], ['admin' => 'desc', 'sort' => 'asc']);
-         $total = $this->service->count($requestData);
+        $requestData['status'] = RoleConstant::ROLE_STATUS_NORMAL;
+        $list  = $this->service->search($requestData, $p, $size, ['*'], ['admin' => 'desc', 'sort' => 'asc']);
+        $total = $this->service->count($requestData);
 
-         $roleIdList = empty($list) ? [] : array_column($list, 'id');
+        $roleIdList = empty($list) ? [] : array_column($list, 'id');
 
          // 角色对应的权限
          $permissionListGroupByRoleId = [];
          if (!empty($roleIdList)) {
-             $permissionList = $this->service->getRolePermissionByIdList($roleIdList);
+             $permissionList = $this->rolePermissionService->getRolePermissionByIdList($roleIdList);
              if (!empty($permissionList)) {
                  foreach ($permissionList as $k => $v) {
                      $permissionListGroupByRoleId[$v['role_id']][] = $v;
@@ -231,7 +238,7 @@ class RoleLogic
         $role   = $this->checkRole($id);
 
         // 查找角色对应的权限
-        $role['permission_list'] = $this->service->getRolePermissionByIdList([$id]);
+        $role['permission_list'] = $this->rolePermissionService->getRolePermissionByIdList([$id]);
 
         return $role;
     }

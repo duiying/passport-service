@@ -2,6 +2,9 @@
 
 namespace App\Module\Permission\Logic;
 
+use App\Constant\AppErrorCode;
+use App\Module\Permission\Constant\PermissionConstant;
+use HyperfPlus\Exception\AppException;
 use HyperfPlus\Util\Util;
 use Hyperf\Di\Annotation\Inject;
 use App\Module\Permission\Service\PermissionService;
@@ -13,6 +16,19 @@ class PermissionLogic
      * @var PermissionService
      */
     private $service;
+
+    /**
+     * 检查权限是否存在并返回
+     *
+     * @param $permissionId
+     * @return array
+     */
+    public function checkPermission($permissionId)
+    {
+        $permission = $this->service->getLineByWhere(['id' => $permissionId, 'status' => PermissionConstant::PERMISSION_STATUS_NORMAL]);
+        if (empty($permission)) throw new AppException(AppErrorCode::PERMISSION_NOT_EXIST_ERROR);
+        return $permission;
+    }
 
     /**
      * 创建
@@ -64,12 +80,13 @@ class PermissionLogic
      */
     public function search($requestData, $p, $size)
     {
-         $list  = $this->service->search($requestData, $p, $size);
-         $total = $this->service->count($requestData);
-         foreach ($list as $k => $v) {
+        $requestData['status'] = PermissionConstant::PERMISSION_STATUS_NORMAL;
+        $list  = $this->service->search($requestData, $p, $size);
+        $total = $this->service->count($requestData);
+        foreach ($list as $k => $v) {
             $list[$k]['url_list'] = !empty($v['url']) ? explode(';', $v['url']) : [];
-         }
-         return Util::formatSearchRes($p, $size, $total, $list);
+        }
+        return Util::formatSearchRes($p, $size, $total, $list);
     }
 
     /**

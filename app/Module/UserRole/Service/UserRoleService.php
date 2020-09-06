@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Module\RolePermission\Service;
+namespace App\Module\UserRole\Service;
 
 use Hyperf\Di\Annotation\Inject;
-use App\Module\RolePermission\Dao\RolePermissionDao;
+use App\Module\UserRole\Dao\UserRoleDao;
 
-class RolePermissionService
+class UserRoleService
 {
     /**
      * @Inject()
-     * @var RolePermissionDao
+     * @var UserRoleDao
      */
     private $dao;
 
@@ -99,8 +99,14 @@ class RolePermissionService
         return $this->dao->count($where);
     }
 
-    public function getRolePermissionByIdList($roleIdList = [])
+    /**
+     * 获取用户的角色列表
+     *
+     * @param array $userIdList
+     * @return array
+     */
+    public function getUserRoleList($userIdList = [])
     {
-        return $this->dao->getRolePermissionByIdList($roleIdList);
+        return $this->dao->getUserRoleList($userIdList);
     }
 }

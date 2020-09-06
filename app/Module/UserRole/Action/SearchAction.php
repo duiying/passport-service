@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Module\Role\Action;
+namespace App\Module\UserRole\Action;
 
-use App\Module\Role\Constant\RoleConstant;
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
 use HyperfPlus\Constant\Constant;
-use App\Module\Role\Logic\RoleLogic;
+use App\Module\UserRole\Logic\UserRoleLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
@@ -16,7 +15,7 @@ class SearchAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var RoleLogic
+     * @var UserRoleLogic
      */
     private $logic;
 
@@ -30,8 +29,8 @@ class SearchAction extends AbstractController
         'p'             => 'integer|min:1',
         'size'          => 'integer|min:1',
         'id'            => 'integer',
-        'name'          => 'string',
-        'admin'         => 'integer',
+        'user_id'       => 'integer',
+        'role_id'       => 'integer',
         'status'        => 'integer'
     ];
 

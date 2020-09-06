@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Module\User\Action;
+namespace App\Module\UserRole\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\User\Logic\UserLogic;
+use App\Module\UserRole\Logic\UserRoleLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
-class CreateAction extends AbstractController
+class UpdateAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var UserLogic
+     * @var UserRoleLogic
      */
     private $logic;
 
@@ -25,12 +25,9 @@ class CreateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'name'          => 'required|string',
-        'email'         => 'required|string',
-        'mobile'        => 'required|string',
-        'position'      => 'required|string',
-        'password'      => 'required|string',
-        'role_id'       => 'string',
+        'id'            => 'required|integer',
+        'user_id'       => 'required|integer',
+        'role_id'       => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -40,7 +37,9 @@ class CreateAction extends AbstractController
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
 
-        $res = $this->logic->create($requestData);
+        $requestData['mtime'] = date('Y-m-d H:i:s');
+
+        $res = $this->logic->update($requestData);
         return $response->success($res);
     }
 }
