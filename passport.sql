@@ -73,6 +73,19 @@ CREATE TABLE `t_passport_role_permission` (
   KEY `idx_permission_id` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色权限表';
 
+DROP TABLE IF EXISTS `t_passport_role_menu`;
+CREATE TABLE `t_passport_role_menu` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `role_id` int(10) unsigned NOT NULL COMMENT '角色ID',
+  `menu_id` int(10) unsigned NOT NULL COMMENT '菜单ID',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态 {-1：删除；1：正常；}',
+  `mtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_role_id` (`role_id`),
+  KEY `idx_menu_id` (`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色菜单表';
+
 DROP TABLE IF EXISTS `t_passport_user_role`;
 CREATE TABLE `t_passport_user_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',

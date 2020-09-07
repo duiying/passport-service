@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Module\Role\Action;
+namespace App\Module\RoleMenu\Action;
 
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\Role\Logic\RoleLogic;
+use App\Module\RoleMenu\Logic\RoleMenuLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
@@ -14,7 +14,7 @@ class CreateAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var RoleLogic
+     * @var RoleMenuLogic
      */
     private $logic;
 
@@ -25,10 +25,8 @@ class CreateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'name'          => 'required|string',
-        'sort'          => 'integer|min:1|max:999',
-        'permission_id' => 'string',
-        'menu_id'       => 'string',
+        'role_id'       => 'required|integer',
+        'menu_id'       => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)

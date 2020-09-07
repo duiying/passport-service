@@ -2,7 +2,9 @@
 
 namespace App\Module\Menu\Logic;
 
+use App\Constant\AppErrorCode;
 use App\Module\Menu\Constant\MenuConstant;
+use HyperfPlus\Exception\AppException;
 use HyperfPlus\Log\StdoutLog;
 use HyperfPlus\Util\Util;
 use Hyperf\Di\Annotation\Inject;
@@ -15,6 +17,19 @@ class MenuLogic
      * @var MenuService
      */
     private $service;
+
+    /**
+     * 检查菜单是否存在并返回
+     *
+     * @param $menuId
+     * @return array
+     */
+    public function checkMenu($menuId)
+    {
+        $menu = $this->service->getLineByWhere(['id' => $menuId, 'status' => MenuConstant::MENU_STATUS_NORMAL]);
+        if (empty($permission)) throw new AppException(AppErrorCode::MENU_NOT_EXIST_ERROR);
+        return $menu;
+    }
 
     /**
      * 创建

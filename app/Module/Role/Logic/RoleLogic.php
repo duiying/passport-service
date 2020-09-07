@@ -3,10 +3,12 @@
 namespace App\Module\Role\Logic;
 
 use App\Constant\AppErrorCode;
+use App\Module\Menu\Logic\MenuLogic;
 use App\Module\Permission\Constant\PermissionConstant;
 use App\Module\Permission\Logic\PermissionLogic;
 use App\Module\Permission\Service\PermissionService;
 use App\Module\Role\Constant\RoleConstant;
+use App\Module\RoleMenu\Service\RoleMenuService;
 use App\Module\RolePermission\Constant\RolePermissionConstant;
 use App\Module\RolePermission\Service\RolePermissionService;
 use HyperfPlus\Exception\AppException;
@@ -32,15 +34,21 @@ class RoleLogic
 
     /**
      * @Inject()
-     * @var PermissionService
+     * @var RoleMenuService
      */
-    private $permissionService;
+    private $roleMenuService;
 
     /**
      * @Inject()
      * @var PermissionLogic
      */
     private $permissionLogic;
+
+    /**
+     * @Inject()
+     * @var MenuLogic
+     */
+    private $menuLogic;
 
     /**
      * 检查角色名称是否重复
@@ -80,9 +88,15 @@ class RoleLogic
 
     public function create($requestData)
     {
+        // 权限
         $permissionId       = isset($requestData['permission_id']) ? $requestData['permission_id'] : '';
         $permissionIdArr    = Util::ids2IdArr($permissionId);
         if (isset($requestData['permission_id'])) unset($requestData['permission_id']);
+
+        // 菜单
+        $menuId             = isset($requestData['menu_id']) ? $requestData['menu_id'] : '';
+        $menuIdArr          = Util::ids2IdArr($menuId);
+        if (isset($requestData['menu_id'])) unset($requestData['menu_id']);
 
         // 检查角色名称是否重复
         $this->checkNameRepeat($requestData['name']);
@@ -101,6 +115,17 @@ class RoleLogic
 
                     // 创建角色权限
                     $this->rolePermissionService->create(['role_id' => $roleId, 'permission_id' => $v]);
+                }
+            }
+
+            // 创建角色菜单
+            if (!empty($menuIdArr)) {
+                foreach ($menuIdArr as $k => $v) {
+                    // 检查菜单是否已删除
+                    $this->menuLogic->checkMenu($v);
+
+                    // 创建角色菜单
+                    $this->rolePermissionService->create(['role_id' => $roleId, 'menu_id' => $v]);
                 }
             }
 
@@ -148,8 +173,7 @@ class RoleLogic
             if (!empty($permissionIdArr)) {
                 foreach ($permissionIdArr as $k => $v) {
                     // 检查权限是否已删除
-                    $permission = $this->permissionService->getLineByWhere(['id' => $v, 'status' => PermissionConstant::PERMISSION_STATUS_NORMAL]);
-                    if (empty($permission)) throw new AppException(AppErrorCode::PERMISSION_NOT_EXIST_ERROR);
+                    $this->permissionLogic->checkPermission($v);
 
                     if ($this->rolePermissionService->search(['role_id' => $id, 'permission_id' => $v])) {
                         // 恢复角色权限
