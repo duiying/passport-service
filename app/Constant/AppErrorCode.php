@@ -64,5 +64,10 @@ class AppErrorCode extends AbstractConstants
      */
     const ROOT_USER_DELETE_ERROR = 3000202;
 
+    /**
+     * @Message("密码输入错误！")
+     */
+    const USER_PASSWORD_ERROR = 3000203;
+
     /******************** 管理员模块错误码 end ***************************************************************************/
 }

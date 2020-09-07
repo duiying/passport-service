@@ -2,8 +2,11 @@
 
 namespace App\Module\User\Service;
 
+use App\Constant\CommonConstant;
+use App\Constant\RedisKeyConst;
 use Hyperf\Di\Annotation\Inject;
 use App\Module\User\Dao\UserDao;
+use HyperfPlus\Redis\Redis;
 
 class UserService
 {
@@ -98,4 +101,30 @@ class UserService
     {
         return $this->dao->count($where);
     }
+
+    /**
+     * 用户 token 写入缓存
+     *
+     * @param $token
+     * @param $userId
+     * @return bool
+     */
+    public function writeTokenBuffer($token, $userId)
+    {
+        $timeout = CommonConstant::TOKEN_EXPIRE_SECONDS;
+
+        $redis = Redis::instance();
+
+        // 清除之前的 token 缓存（如果有的话），保证管理员同时只有一个有效 token
+        $prevToken = $redis->get(RedisKeyConst::USER_TOKEN . $userId);
+        if (!empty($prevToken)) $redis->del($prevToken);
+
+        // 缓存双写 （1）可以通过 token 找到管理员信息（2）可以通过管理员 ID 获取 token 信息
+        $redis->set($token, $userId, $timeout);
+        $redis->set(RedisKeyConst::USER_TOKEN . $userId, $token, $timeout);
+
+        return true;
+    }
+
+
 }

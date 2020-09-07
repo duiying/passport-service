@@ -3,6 +3,7 @@
 namespace App\Module\User\Logic;
 
 use App\Constant\AppErrorCode;
+use App\Constant\CommonConstant;
 use App\Module\Role\Logic\RoleLogic;
 use App\Module\User\Constant\UserConstant;
 use App\Module\UserRole\Constant\UserRoleConstant;
@@ -33,6 +34,16 @@ class UserLogic
      */
     private $roleLogic;
 
+    public static function encryptPassword($password)
+    {
+        return md5('passport_&_#' . $password);
+    }
+
+    public static function generateToken($userId)
+    {
+        return md5(uniqid(mt_rand(), true) . $userId . mt_rand());
+    }
+
     /**
      * 检查角色是否存在并返回
      *
@@ -57,6 +68,7 @@ class UserLogic
         $roleId         = isset($requestData['role_id']) ? $requestData['role_id'] : '';
         $roleIdArr      = Util::ids2IdArr($roleId);
         if (isset($requestData['role_id'])) unset($requestData['role_id']);
+        $requestData['password'] = self::encryptPassword($requestData['password']);
 
         $this->service->beginTransaction();
 
@@ -95,6 +107,7 @@ class UserLogic
     {
         $id     = $requestData['id'];
         unset($requestData['id']);
+        if (isset($requestData['password'])) $requestData['password'] = self::encryptPassword($requestData['password']);
 
         // 检查用户是否存在
         $user = $this->checkUser($id);
@@ -210,5 +223,26 @@ class UserLogic
         $user = $this->checkUser($id);
         $user['role_list'] = $this->userRoleService->getUserRoleList([$id]);
         return $user;
+    }
+
+    public function login($requestData)
+    {
+        $email = $requestData['email'];
+        $password = $requestData['password'];
+
+        $user = $this->service->getLineByWhere([
+            'email'     => $email,
+            'status'    => UserConstant::USER_STATUS_NORMAL,
+        ]);
+
+        if (empty($user)) throw new AppException(AppErrorCode::USER_NOT_EXIST_ERROR);
+        if ($user['password'] != self::encryptPassword($password)) throw new AppException(AppErrorCode::USER_PASSWORD_ERROR);
+
+        $token = self::generateToken($user['id']);
+
+        // 用户 token 写入缓存
+        $this->service->writeTokenBuffer($token, $user['id']);
+
+        return ['access_token' => $token, 'expire' => CommonConstant::TOKEN_EXPIRE_SECONDS];
     }
 }
