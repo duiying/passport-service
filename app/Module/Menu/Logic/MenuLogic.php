@@ -26,8 +26,9 @@ class MenuLogic
      */
     public function checkMenu($menuId)
     {
-        $menu = $this->service->getLineByWhere(['id' => $menuId, 'status' => MenuConstant::MENU_STATUS_NORMAL]);
-        if (empty($permission)) throw new AppException(AppErrorCode::MENU_NOT_EXIST_ERROR);
+        // 只允许添加二级菜单
+        $menu = $this->service->getLineByWhere(['id' => $menuId, 'status' => MenuConstant::MENU_STATUS_NORMAL, 'pid' => ['>', 0]]);
+        if (empty($menu)) throw new AppException(AppErrorCode::MENU_NOT_EXIST_ERROR);
         return $menu;
     }
 

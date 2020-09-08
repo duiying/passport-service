@@ -77,7 +77,7 @@ class AppErrorCode extends AbstractConstants
     /******************** 菜单模块错误码 begin 3000301 ~ 3000400 *********************************************************/
 
     /**
-     * @Message("管理员不存在！")
+     * @Message("角色不存在！")
      */
     const MENU_NOT_EXIST_ERROR = 3000301;
 

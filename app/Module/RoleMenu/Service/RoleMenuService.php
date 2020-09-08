@@ -98,4 +98,9 @@ class RoleMenuService
     {
         return $this->dao->count($where);
     }
+
+    public function getRoleMenuByIdList($roleIdList)
+    {
+        return $this->dao->getRoleMenuByIdList($roleIdList);
+    }
 }

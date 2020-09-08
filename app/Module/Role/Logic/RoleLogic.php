@@ -125,7 +125,7 @@ class RoleLogic
                     $this->menuLogic->checkMenu($v);
 
                     // 创建角色菜单
-                    $this->rolePermissionService->create(['role_id' => $roleId, 'menu_id' => $v]);
+                    $this->roleMenuService->create(['role_id' => $roleId, 'menu_id' => $v]);
                 }
             }
 
@@ -232,19 +232,31 @@ class RoleLogic
 
         $roleIdList = empty($list) ? [] : array_column($list, 'id');
 
-         // 角色对应的权限
-         $permissionListGroupByRoleId = [];
-         if (!empty($roleIdList)) {
-             $permissionList = $this->rolePermissionService->getRolePermissionByIdList($roleIdList);
-             if (!empty($permissionList)) {
-                 foreach ($permissionList as $k => $v) {
-                     $permissionListGroupByRoleId[$v['role_id']][] = $v;
-                 }
-             }
-         }
+        // 角色对应的权限
+        $permissionListGroupByRoleId = [];
+        if (!empty($roleIdList)) {
+            $permissionList = $this->rolePermissionService->getRolePermissionByIdList($roleIdList);
+            if (!empty($permissionList)) {
+                foreach ($permissionList as $k => $v) {
+                    $permissionListGroupByRoleId[$v['role_id']][] = $v;
+                }
+            }
+        }
+
+        // 角色对应的菜单
+        $menuListGroupByRoleId = [];
+        if (!empty($roleIdList)) {
+            $menuList = $this->roleMenuService->getRoleMenuByIdList($roleIdList);
+            if (!empty($menuList)) {
+                foreach ($menuList as $k => $v) {
+                    $menuListGroupByRoleId[$v['role_id']][] = $v;
+                }
+            }
+        }
 
          foreach ($list as $k => $v) {
              $list[$k]['permission_list'] = isset($permissionListGroupByRoleId[$v['id']]) ? $permissionListGroupByRoleId[$v['id']] : [];
+             $list[$k]['menu_list'] = isset($menuListGroupByRoleId[$v['id']]) ? $menuListGroupByRoleId[$v['id']] : [];
          }
 
          return Util::formatSearchRes($p, $size, $total, $list);
