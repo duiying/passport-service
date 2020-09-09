@@ -10,6 +10,7 @@ use App\Module\Menu\Service\MenuService;
 use App\Module\Role\Constant\RoleConstant;
 use App\Module\Role\Logic\RoleLogic;
 use App\Module\RoleMenu\Service\RoleMenuService;
+use App\Module\RolePermission\Service\RolePermissionService;
 use App\Module\User\Constant\UserConstant;
 use App\Module\UserRole\Constant\UserRoleConstant;
 use App\Module\UserRole\Service\UserRoleService;
@@ -38,6 +39,12 @@ class UserLogic
      * @var UserRoleService
      */
     private $userRoleService;
+
+    /**
+     * @Inject()
+     * @var RolePermissionService
+     */
+    private $rolePermissionService;
 
     /**
      * @Inject()
@@ -338,5 +345,55 @@ class UserLogic
         }
 
         return ['list' => $classAMenuList];
+    }
+
+    public function checkPermission($requestData)
+    {
+        var_dump($requestData);
+        $token          = $requestData['access_token'];
+        $userId         = $this->service->getUserIdByToken($token);
+
+        // 管理员角色
+        $userRoleList   = $this->userRoleService->getUserRoleList([$userId]);
+        // 管理员角色为空，直接抛错
+        if (empty($userRoleList)) throw new AppException(AppErrorCode::USER_ROLE_EMPTY_ERROR);
+
+        // 部分路由直接返回，不需要校验权限
+        if (in_array($requestData['url'], [
+            '/',                            // 后台首页
+            '/v1/user/menu',                // 左侧菜单接口
+        ])) {
+            return true;
+        }
+
+        // 管理员是否有超级管理员角色
+        $hasAdminRole   = false;
+        foreach ($userRoleList as $k => $v) {
+            if ($v['admin'] == RoleConstant::ADMIN_YES) $hasAdminRole = true;
+        }
+        // 如果管理员有超级管理员角色，直接返回
+        if ($hasAdminRole) return true;
+
+        $roleIdList = array_column($userRoleList, 'role_id');
+
+        // 角色对应的权限
+        $permissionList = $this->rolePermissionService->getRolePermissionByIdList($roleIdList);
+        // 角色权限为空，直接抛错
+        if (empty($permissionList)) throw new AppException(AppErrorCode::USER_ROLE_PERMISSION_EMPTY_ERROR);
+        // 权限去重
+        $permissionList = Util::twoDimensionalArrayUnique($permissionList, 'permission_id');
+        // 权限路由
+        $urlList = [];
+        foreach ($permissionList as $k => $v) {
+            $tmpUrlList = explode(';', $v['url']);
+            $urlList = array_merge($urlList, $tmpUrlList);
+        }
+        // 权限路由去重
+        $urlList = array_values(array_unique($urlList));
+
+        // 请求的路由不在该管理员拥有的权限列表中，则表示该管理员无该路由的权限
+        if (empty($urlList) || !in_array($requestData['url'], $urlList)) throw new AppException(AppErrorCode::USER_PERMISSION_ERROR);
+
+        return true;
     }
 }

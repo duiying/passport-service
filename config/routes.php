@@ -18,6 +18,7 @@ Router::addRoute(['POST'], '/v1/user/update', Route::decoration('User\Action\Upd
 Router::addRoute(['POST'], '/v1/user/update_field', Route::decoration('User\Action\UpdateFieldAction'));
 Router::addRoute(['POST'], '/v1/user/login', Route::decoration('User\Action\LoginAction'));
 Router::addRoute(['GET'], '/v1/user/menu', Route::decoration('User\Action\MenuAction'));
+Router::addRoute(['GET'], '/v1/user/check_permission', Route::decoration('User\Action\CheckPermissionAction'));
 
 /**
  * 菜单模块

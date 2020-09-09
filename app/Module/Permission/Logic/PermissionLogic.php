@@ -81,7 +81,7 @@ class PermissionLogic
     public function search($requestData, $p, $size)
     {
         $requestData['status'] = PermissionConstant::PERMISSION_STATUS_NORMAL;
-        $list  = $this->service->search($requestData, $p, $size);
+        $list  = $this->service->search($requestData, $p, $size, ['*'], ['sort' => 'asc', 'id' => 'desc']);
         $total = $this->service->count($requestData);
         foreach ($list as $k => $v) {
             $list[$k]['url_list'] = !empty($v['url']) ? explode(';', $v['url']) : [];

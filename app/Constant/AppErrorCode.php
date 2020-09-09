@@ -80,6 +80,21 @@ class AppErrorCode extends AbstractConstants
      */
     const EMAIL_REPEAT_ERROR = 3000205;
 
+    /**
+     * @Message("无任何权限！")
+     */
+    const USER_ROLE_EMPTY_ERROR = 3000206;
+
+    /**
+     * @Message("无任何权限！")
+     */
+    const USER_ROLE_PERMISSION_EMPTY_ERROR = 3000207;
+
+    /**
+     * @Message("无权限！")
+     */
+    const USER_PERMISSION_ERROR = 3000208;
+
     /******************** 管理员模块错误码 end ***************************************************************************/
 
 

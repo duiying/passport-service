@@ -136,6 +136,7 @@ class UserService
      */
     public function getUserIdByToken($token)
     {
+        var_dump($token);
         $redis = Redis::instance();
         $userId = $redis->get($token);
         if (empty($userId)) throw new AppException(AppErrorCode::TOKEN_INVALID_ERROR);
