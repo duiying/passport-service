@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Module\Menu\Action;
+namespace App\Module\User\Action;
 
+use App\Module\User\Logic\UserLogic;
 use HyperfPlus\Util\Util;
 use HyperfPlus\Controller\AbstractController;
-use App\Module\Menu\Logic\MenuLogic;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use HyperfPlus\Http\Response;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
-class UpdateAction extends AbstractController
+class MenuAction extends AbstractController
 {
     /**
      * @Inject()
-     * @var MenuLogic
+     * @var UserLogic
      */
     private $logic;
 
@@ -25,12 +25,7 @@ class UpdateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'id'          => 'required|integer',
-        'pid'         => 'required|integer',
-        'name'        => 'required|string',
-        'icon'        => 'required|string',
-        'url'         => 'string',
-        'sort'        => 'integer|min:1|max:999',
+        'access_token' => 'required|string'
     ];
 
     public function handle(RequestInterface $request, Response $response)
@@ -40,7 +35,7 @@ class UpdateAction extends AbstractController
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
 
-        $res = $this->logic->update($requestData);
+        $res = $this->logic->getUserMenuList($requestData);
         return $response->success($res);
     }
 }

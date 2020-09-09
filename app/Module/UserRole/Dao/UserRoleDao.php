@@ -21,7 +21,7 @@ class UserRoleDao extends MySQLDao
      */
     public function getUserRoleList($userIdList = [])
     {
-        $sql = "select a.user_id, a.role_id, b.name from t_passport_user_role a 
+        $sql = "select a.user_id, a.role_id, b.name, b.admin from t_passport_user_role a 
 left join t_passport_role b on a.role_id = b.id
 where a.user_id in (" . implode(',', $userIdList) . ") and a.status = ? and b.status = ? order by b.sort asc";
 

@@ -4,7 +4,12 @@ namespace App\Module\User\Logic;
 
 use App\Constant\AppErrorCode;
 use App\Constant\CommonConstant;
+use App\Module\Menu\Constant\MenuConstant;
+use App\Module\Menu\Logic\MenuLogic;
+use App\Module\Menu\Service\MenuService;
+use App\Module\Role\Constant\RoleConstant;
 use App\Module\Role\Logic\RoleLogic;
+use App\Module\RoleMenu\Service\RoleMenuService;
 use App\Module\User\Constant\UserConstant;
 use App\Module\UserRole\Constant\UserRoleConstant;
 use App\Module\UserRole\Service\UserRoleService;
@@ -24,15 +29,33 @@ class UserLogic
 
     /**
      * @Inject()
+     * @var MenuService
+     */
+    private $menuService;
+
+    /**
+     * @Inject()
      * @var UserRoleService
      */
     private $userRoleService;
 
     /**
      * @Inject()
+     * @var RoleMenuService
+     */
+    private $roleMenuService;
+
+    /**
+     * @Inject()
      * @var RoleLogic
      */
     private $roleLogic;
+
+    /**
+     * @Inject()
+     * @var MenuLogic
+     */
+    private $menuLogic;
 
     public static function encryptPassword($password)
     {
@@ -42,6 +65,19 @@ class UserLogic
     public static function generateToken($userId)
     {
         return md5(uniqid(mt_rand(), true) . $userId . mt_rand());
+    }
+
+    /**
+     * 检查管理员邮箱是否重复
+     *
+     * @param $email
+     * @param int $id
+     */
+    public function checkEmailRepeat($email, $id = 0)
+    {
+        $user = $this->service->getLineByWhere(['email' => $email, 'status' => UserConstant::USER_STATUS_NORMAL]);
+        if (empty($user)) return;
+        if ($user['id'] != $id) throw new AppException(AppErrorCode::EMAIL_REPEAT_ERROR);
     }
 
     /**
@@ -69,6 +105,9 @@ class UserLogic
         $roleIdArr      = Util::ids2IdArr($roleId);
         if (isset($requestData['role_id'])) unset($requestData['role_id']);
         $requestData['password'] = self::encryptPassword($requestData['password']);
+
+        // 检查邮箱是否重复
+        $this->checkEmailRepeat($requestData['email']);
 
         $this->service->beginTransaction();
 
@@ -115,6 +154,8 @@ class UserLogic
         if ($user['root'] == UserConstant::IS_ROOT && isset($requestData['role_id'])) {
             unset($requestData['role_id']);
         }
+        // 检查邮箱是否重复
+        $this->checkEmailRepeat($requestData['email'], $user['id']);
 
         $roleId         = isset($requestData['role_id']) ? $requestData['role_id'] : '';
         $roleIdArr      = Util::ids2IdArr($roleId);
@@ -244,5 +285,58 @@ class UserLogic
         $this->service->writeTokenBuffer($token, $user['id']);
 
         return ['access_token' => $token, 'expire' => CommonConstant::TOKEN_EXPIRE_SECONDS];
+    }
+
+    /**
+     * 获取用户拥有的菜单
+     *
+     * @param $requestData
+     * @return array|array[]
+     */
+    public function getUserMenuList($requestData)
+    {
+        $token          = $requestData['access_token'];
+        $userId         = $this->service->getUserIdByToken($token);
+
+        $list           = ['list' => []];
+
+        // 管理员角色
+        $userRoleList   = $this->userRoleService->getUserRoleList([$userId]);
+        if (empty($userRoleList)) return $list;
+
+        // 管理员是否有超级管理员角色
+        $hasAdminRole   = false;
+        foreach ($userRoleList as $k => $v) {
+            if ($v['admin'] == RoleConstant::ADMIN_YES) $hasAdminRole = true;
+        }
+        // 如果管理员有超级管理员角色，返回所有菜单
+        if ($hasAdminRole) return $this->menuLogic->search([]);
+
+        // 角色菜单
+        $roleMenuList = $this->roleMenuService->getRoleMenuByIdList(array_column($userRoleList, 'role_id'));
+        if (empty($roleMenuList)) return $list;
+        // 菜单去重
+        $roleMenuList = Util::twoDimensionalArrayUnique($roleMenuList, 'id');
+
+        // 一级菜单 ID 列表
+        $classAMenuIdList = [];
+        foreach ($roleMenuList as $k => $v) {
+            unset($roleMenuList[$k]['role_id']);
+            if (!in_array($v['pid'], $classAMenuIdList)) $classAMenuIdList[] = $v['pid'];
+        }
+        // 一级菜单列表
+        $classAMenuList = $this->menuService->search(['id' => $classAMenuIdList, 'status' => MenuConstant::MENU_STATUS_NORMAL], 0, 0, ['*'], ['sort' => 'asc']);
+
+        foreach ($classAMenuList as $classAMenuKey => $classAMenuVal) {
+            $classAMenuList[$classAMenuKey]['sub_menu_list'] = [];
+
+            foreach ($roleMenuList as $classBMenuKey => $classBMenuVal) {
+                if ($classBMenuVal['pid'] == $classAMenuVal['id']) {
+                    $classAMenuList[$classAMenuKey]['sub_menu_list'][] = $classBMenuVal;
+                }
+            }
+        }
+
+        return ['list' => $classAMenuList];
     }
 }

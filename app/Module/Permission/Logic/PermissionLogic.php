@@ -38,8 +38,8 @@ class PermissionLogic
      */
     public function create($requestData)
     {
-        $data = $requestData;
-        return $this->service->create($data);
+        $requestData['url'] = rtrim($requestData['url'], ';');
+        return $this->service->create($requestData);
     }
 
     /**

@@ -2,10 +2,12 @@
 
 namespace App\Module\User\Service;
 
+use App\Constant\AppErrorCode;
 use App\Constant\CommonConstant;
 use App\Constant\RedisKeyConst;
 use Hyperf\Di\Annotation\Inject;
 use App\Module\User\Dao\UserDao;
+use HyperfPlus\Exception\AppException;
 use HyperfPlus\Redis\Redis;
 
 class UserService
@@ -126,5 +128,17 @@ class UserService
         return true;
     }
 
-
+    /**
+     * 根据用户 token 获取用户 ID
+     *
+     * @param $token
+     * @return bool|mixed|string
+     */
+    public function getUserIdByToken($token)
+    {
+        $redis = Redis::instance();
+        $userId = $redis->get($token);
+        if (empty($userId)) throw new AppException(AppErrorCode::TOKEN_INVALID_ERROR);
+        return $userId;
+    }
 }

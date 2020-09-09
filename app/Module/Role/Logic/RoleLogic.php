@@ -205,7 +205,7 @@ class RoleLogic
     {
         $id = $requestData['id'];
         unset($requestData['id']);
-
+var_dump($requestData);
         // 检查角色是否存在
         $role = $this->checkRole($id);
         // 超级管理员角色不允许更新

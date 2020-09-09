@@ -70,6 +70,16 @@ class AppErrorCode extends AbstractConstants
      */
     const USER_PASSWORD_ERROR = 3000203;
 
+    /**
+     * @Message("登录令牌失效，请重新登录！")
+     */
+    const TOKEN_INVALID_ERROR = 3000204;
+
+    /**
+     * @Message("邮箱已存在！")
+     */
+    const EMAIL_REPEAT_ERROR = 3000205;
+
     /******************** 管理员模块错误码 end ***************************************************************************/
 
 
@@ -80,6 +90,16 @@ class AppErrorCode extends AbstractConstants
      * @Message("角色不存在！")
      */
     const MENU_NOT_EXIST_ERROR = 3000301;
+
+    /**
+     * @Message("路由不能为空！")
+     */
+    const MENU_URL_EMPTY_ERROR = 3000302;
+
+    /**
+     * @Message("请先删除下面的二级菜单！")
+     */
+    const CLASS_A_MENU_DELETE_ERROR = 3000303;
 
     /******************** 菜单模块错误码 end *****************************************************************************/
 }

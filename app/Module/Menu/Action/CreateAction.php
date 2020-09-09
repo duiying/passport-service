@@ -28,7 +28,7 @@ class CreateAction extends AbstractController
         'pid'         => 'required|integer',
         'name'        => 'required|string',
         'icon'        => 'required|string',
-        'url'         => 'required|string',
+        'url'         => 'string',
         'sort'        => 'integer|min:1|max:999',
     ];
 
