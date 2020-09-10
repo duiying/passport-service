@@ -129,6 +129,21 @@ class UserService
     }
 
     /**
+     * 清除 token 缓存
+     *
+     * @param $token
+     */
+    public function deleteTokenBuffer($token)
+    {
+        $redis = Redis::instance();
+
+        $userId = $redis->get($token);
+
+        $redis->del($token);
+        $redis->del(RedisKeyConst::USER_TOKEN . $userId);
+    }
+
+    /**
      * 根据用户 token 获取用户 ID
      *
      * @param $token
@@ -136,7 +151,6 @@ class UserService
      */
     public function getUserIdByToken($token)
     {
-        var_dump($token);
         $redis = Redis::instance();
         $userId = $redis->get($token);
         if (empty($userId)) throw new AppException(AppErrorCode::TOKEN_INVALID_ERROR);

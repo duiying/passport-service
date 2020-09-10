@@ -17,6 +17,7 @@ Router::addRoute(['POST'], '/v1/user/create', Route::decoration('User\Action\Cre
 Router::addRoute(['POST'], '/v1/user/update', Route::decoration('User\Action\UpdateAction'));
 Router::addRoute(['POST'], '/v1/user/update_field', Route::decoration('User\Action\UpdateFieldAction'));
 Router::addRoute(['POST'], '/v1/user/login', Route::decoration('User\Action\LoginAction'));
+Router::addRoute(['POST'], '/v1/user/logout', Route::decoration('User\Action\LogoutAction'));
 Router::addRoute(['GET'], '/v1/user/menu', Route::decoration('User\Action\MenuAction'));
 Router::addRoute(['GET'], '/v1/user/check_permission', Route::decoration('User\Action\CheckPermissionAction'));
 

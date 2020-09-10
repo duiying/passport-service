@@ -296,6 +296,19 @@ class UserLogic
     }
 
     /**
+     * 退出登录
+     *
+     * @param $requestData
+     * @return bool
+     */
+    public function logout($requestData)
+    {
+        $accessToken = $requestData['access_token'];
+        $this->service->deleteTokenBuffer($accessToken);
+        return true;
+    }
+
+    /**
      * 获取用户拥有的菜单
      *
      * @param $requestData
@@ -360,7 +373,7 @@ class UserLogic
         if (in_array($requestData['url'], [
             '/',                            // 后台首页
             '/v1/user/menu',                // 左侧菜单接口
-            '/user/get_info',               // 用户基本信息
+            '/v1/user/get_info',               // 用户基本信息
         ])) {
             return $userId;
         }
