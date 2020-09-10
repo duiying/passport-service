@@ -25,7 +25,7 @@ class MenuAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'access_token' => 'required|string'
+        'user_id' => 'required|integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)

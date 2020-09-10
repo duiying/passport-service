@@ -303,9 +303,7 @@ class UserLogic
      */
     public function getUserMenuList($requestData)
     {
-        $token          = $requestData['access_token'];
-        $userId         = $this->service->getUserIdByToken($token);
-
+        $userId         = $requestData['user_id'];
         $list           = ['list' => []];
 
         // 管理员角色
