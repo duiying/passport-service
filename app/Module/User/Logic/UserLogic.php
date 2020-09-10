@@ -269,6 +269,7 @@ class UserLogic
     {
         $id = $requestData['id'];
         $user = $this->checkUser($id);
+        unset($user['password']);
         $user['role_list'] = $this->userRoleService->getUserRoleList([$id]);
         return $user;
     }
@@ -349,7 +350,6 @@ class UserLogic
 
     public function checkPermission($requestData)
     {
-        var_dump($requestData);
         $token          = $requestData['access_token'];
         $userId         = $this->service->getUserIdByToken($token);
 
@@ -362,8 +362,9 @@ class UserLogic
         if (in_array($requestData['url'], [
             '/',                            // 后台首页
             '/v1/user/menu',                // 左侧菜单接口
+            '/user/get_info',               // 用户基本信息
         ])) {
-            return true;
+            return $userId;
         }
 
         // 管理员是否有超级管理员角色
@@ -372,7 +373,7 @@ class UserLogic
             if ($v['admin'] == RoleConstant::ADMIN_YES) $hasAdminRole = true;
         }
         // 如果管理员有超级管理员角色，直接返回
-        if ($hasAdminRole) return true;
+        if ($hasAdminRole) return $userId;
 
         $roleIdList = array_column($userRoleList, 'role_id');
 
@@ -394,6 +395,6 @@ class UserLogic
         // 请求的路由不在该管理员拥有的权限列表中，则表示该管理员无该路由的权限
         if (empty($urlList) || !in_array($requestData['url'], $urlList)) throw new AppException(AppErrorCode::USER_PERMISSION_ERROR);
 
-        return true;
+        return $userId;
     }
 }
