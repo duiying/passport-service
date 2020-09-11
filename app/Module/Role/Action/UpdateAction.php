@@ -29,6 +29,7 @@ class UpdateAction extends AbstractController
         'name'          => 'required|string',
         'sort'          => 'integer|min:1|max:999',
         'permission_id' => 'string',
+        'menu_id'       => 'string',
     ];
 
     public function handle(RequestInterface $request, Response $response)

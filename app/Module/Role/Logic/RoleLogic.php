@@ -8,6 +8,7 @@ use App\Module\Permission\Constant\PermissionConstant;
 use App\Module\Permission\Logic\PermissionLogic;
 use App\Module\Permission\Service\PermissionService;
 use App\Module\Role\Constant\RoleConstant;
+use App\Module\RoleMenu\Constant\RoleMenuConstant;
 use App\Module\RoleMenu\Service\RoleMenuService;
 use App\Module\RolePermission\Constant\RolePermissionConstant;
 use App\Module\RolePermission\Service\RolePermissionService;
@@ -157,9 +158,15 @@ class RoleLogic
         // 检查角色名称是否重复
         $this->checkNameRepeat($requestData['name'], $id);
 
+        // 权限
         $permissionId       = isset($requestData['permission_id']) ? $requestData['permission_id'] : '';
         $permissionIdArr    = Util::ids2IdArr($permissionId);
         if (isset($requestData['permission_id'])) unset($requestData['permission_id']);
+
+        // 菜单
+        $menuId             = isset($requestData['menu_id']) ? $requestData['menu_id'] : '';
+        $menuIdArr          = Util::ids2IdArr($menuId);
+        if (isset($requestData['menu_id'])) unset($requestData['menu_id']);
 
         $this->service->beginTransaction();
 
@@ -181,6 +188,23 @@ class RoleLogic
                     } else {
                         // 创建角色权限
                         $this->rolePermissionService->create(['role_id' => $id, 'permission_id' => $v]);
+                    }
+                }
+            }
+
+            // 将角色的所有菜单置为已删除
+            $this->roleMenuService->update(['role_id' => $id], ['status' => RoleMenuConstant::ROLE_MENU_STATUS_DELETE]);
+            if (!empty($menuIdArr)) {
+                foreach ($menuIdArr as $k => $v) {
+                    // 检查菜单是否已删除
+                    $this->menuLogic->checkMenu($v);
+
+                    if ($this->roleMenuService->search(['role_id' => $id, 'menu_id' => $v])) {
+                        // 恢复角色菜单
+                        $this->roleMenuService->update(['role_id' => $id, 'menu_id' => $v], ['status' => RoleMenuConstant::ROLE_MENU_STATUS_NORMAL]);
+                    } else {
+                        // 创建角色菜单
+                        $this->roleMenuService->create(['role_id' => $id, 'menu_id' => $v]);
                     }
                 }
             }
@@ -273,8 +297,12 @@ var_dump($requestData);
         $id     = $requestData['id'];
         $role   = $this->checkRole($id);
 
-        // 查找角色对应的权限
+        // 角色对应的权限
         $role['permission_list'] = $this->rolePermissionService->getRolePermissionByIdList([$id]);
+
+        // 角色对应的菜单
+        $menuList = $this->roleMenuService->getRoleMenuByIdList([$id]);
+        $role['menu_list'] = $menuList;
 
         return $role;
     }
