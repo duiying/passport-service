@@ -1,5 +1,7 @@
 CREATE DATABASE passport DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
 
+use passport;
+
 DROP TABLE IF EXISTS `t_passport_role`;
 CREATE TABLE `t_passport_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
