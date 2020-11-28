@@ -29,7 +29,7 @@ class CreateAction extends AbstractController
         'email'         => 'required|string',
         'mobile'        => 'required|string',
         'position'      => 'required|string',
-        'password'      => 'required|string',
+        'password'      => 'required|string|min:6',
         'role_id'       => 'string',
     ];
 
