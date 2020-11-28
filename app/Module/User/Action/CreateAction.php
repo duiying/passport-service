@@ -26,7 +26,7 @@ class CreateAction extends AbstractController
 
     private $rules = [
         'name'          => 'required|string',
-        'email'         => 'required|string',
+        'email'         => 'required|email',
         'mobile'        => 'required|string',
         'position'      => 'required|string',
         'password'      => 'required|string|min:6',
