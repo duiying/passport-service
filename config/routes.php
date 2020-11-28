@@ -14,7 +14,7 @@ Router::get('/favicon.ico', function () {
 
 Router::addGroup('/v1/',function () {
     /**
-     * 管理员模块
+     * 用户模块
      */
     Router::addRoute(['GET'], 'user/search', Route::decoration('User\Action\SearchAction'));
     Router::addRoute(['GET'], 'user/find', Route::decoration('User\Action\FindAction'));
