@@ -15,9 +15,15 @@ class RoleMenuDao extends MySQLDao
     public $connection = 'passport';
     public $table = 't_passport_role_menu';
 
+    /**
+     * 根据角色 ID 列表获取角色菜单
+     *
+     * @param $roleIdList
+     * @return array
+     */
     public function getRoleMenuByIdList($roleIdList)
     {
-        $sql = "select a.role_id,b.* from t_passport_role_menu a 
+        $sql = "select a.role_id, b.* from t_passport_role_menu a 
 left join t_passport_menu b on a.menu_id = b.id
 where a.role_id in (" . implode(',', $roleIdList) . ") and a.status = ? and b.status = ? order by b.sort asc";
 

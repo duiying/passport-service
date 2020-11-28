@@ -290,10 +290,16 @@ class UserLogic
         return $user;
     }
 
+    /**
+     * 用户登录
+     *
+     * @param $requestData
+     * @return array
+     */
     public function login($requestData)
     {
-        $email = $requestData['email'];
-        $password = $requestData['password'];
+        $email      = $requestData['email'];
+        $password   = $requestData['password'];
 
         $user = $this->service->getLineByWhere([
             'email'     => $email,
@@ -333,11 +339,14 @@ class UserLogic
     public function getUserMenuList($requestData)
     {
         $userId         = $requestData['user_id'];
-        $list           = ['list' => []];
+        $emptyList      = ['list' => []];
 
-        // 管理员角色
+        // 检查用户是否存在
+        $this->checkUser($userId);
+
+        // 获取用户的角色列表
         $userRoleList   = $this->userRoleService->getUserRoleList([$userId]);
-        if (empty($userRoleList)) return $list;
+        if (empty($userRoleList)) return $emptyList;
 
         // 管理员是否有超级管理员角色
         $hasAdminRole   = false;
@@ -349,7 +358,7 @@ class UserLogic
 
         // 角色菜单
         $roleMenuList = $this->roleMenuService->getRoleMenuByIdList(array_column($userRoleList, 'role_id'));
-        if (empty($roleMenuList)) return $list;
+        if (empty($roleMenuList)) return $emptyList;
         // 菜单去重
         $roleMenuList = Util::twoDimensionalArrayUnique($roleMenuList, 'id');
 
@@ -359,7 +368,7 @@ class UserLogic
             unset($roleMenuList[$k]['role_id']);
             if (!in_array($v['pid'], $classAMenuIdList)) $classAMenuIdList[] = $v['pid'];
         }
-        // 一级菜单列表
+        // 一级菜单列表（排序）
         $classAMenuList = $this->menuService->search(['id' => $classAMenuIdList, 'status' => MenuConstant::MENU_STATUS_NORMAL], 0, 0, ['*'], ['sort' => 'asc']);
 
         foreach ($classAMenuList as $classAMenuKey => $classAMenuVal) {
@@ -375,31 +384,39 @@ class UserLogic
         return ['list' => $classAMenuList];
     }
 
+    /**
+     * 检查用户权限
+     *
+     * @param $requestData
+     * @return bool|mixed|string
+     */
     public function checkPermission($requestData)
     {
         $token          = $requestData['access_token'];
+        // 根据 access_token 获取用户 ID，如果从缓存中没有获取到用户 ID，抛出异常
         $userId         = $this->service->getUserIdByToken($token);
-
-        // 管理员角色
-        $userRoleList   = $this->userRoleService->getUserRoleList([$userId]);
-        // 管理员角色为空，直接抛错
-        if (empty($userRoleList)) throw new AppException(AppErrorCode::USER_ROLE_EMPTY_ERROR);
+        $userId         = intval($userId);
 
         // 部分路由直接返回，不需要校验权限
         if (in_array($requestData['url'], [
             '/',                            // 后台首页
             '/v1/user/menu',                // 左侧菜单接口
-            '/v1/user/get_info',               // 用户基本信息
+            '/v1/user/get_info',            // 用户基本信息
         ])) {
             return $userId;
         }
 
-        // 管理员是否有超级管理员角色
+        // 用户角色
+        $userRoleList   = $this->userRoleService->getUserRoleList([$userId]);
+        // 用户角色为空，直接抛错
+        if (empty($userRoleList)) throw new AppException(AppErrorCode::USER_ROLE_EMPTY_ERROR);
+
+        // 用户是否有超级管理员角色
         $hasAdminRole   = false;
         foreach ($userRoleList as $k => $v) {
             if ($v['admin'] == RoleConstant::ADMIN_YES) $hasAdminRole = true;
         }
-        // 如果管理员有超级管理员角色，直接返回
+        // 如果用户有超级管理员角色，直接返回
         if ($hasAdminRole) return $userId;
 
         $roleIdList = array_column($userRoleList, 'role_id');
@@ -414,12 +431,12 @@ class UserLogic
         $urlList = [];
         foreach ($permissionList as $k => $v) {
             $tmpUrlList = explode(';', $v['url']);
-            $urlList = array_merge($urlList, $tmpUrlList);
+            $urlList    = array_merge($urlList, $tmpUrlList);
         }
         // 权限路由去重
         $urlList = array_values(array_unique($urlList));
 
-        // 请求的路由不在该管理员拥有的权限列表中，则表示该管理员无该路由的权限
+        // 请求的路由不在该用户拥有的权限列表中，则表示该用户无该路由的权限
         if (empty($urlList) || !in_array($requestData['url'], $urlList)) throw new AppException(AppErrorCode::USER_PERMISSION_ERROR);
 
         return $userId;

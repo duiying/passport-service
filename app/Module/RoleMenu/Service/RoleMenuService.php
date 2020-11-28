@@ -99,6 +99,12 @@ class RoleMenuService
         return $this->dao->count($where);
     }
 
+    /**
+     * 根据角色 ID 列表获取角色菜单
+     *
+     * @param $roleIdList
+     * @return array
+     */
     public function getRoleMenuByIdList($roleIdList)
     {
         return $this->dao->getRoleMenuByIdList($roleIdList);
