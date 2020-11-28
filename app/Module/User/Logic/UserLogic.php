@@ -257,8 +257,8 @@ class UserLogic
 
         $userRoleGroupByUserId = [];
         if (!empty($list)) {
-            $userIdList = array_column($list, 'id');
-            $userRoleList = $this->userRoleService->getUserRoleList($userIdList);
+            $userIdList     = array_column($list, 'id');
+            $userRoleList   = $this->userRoleService->getUserRoleList($userIdList);
 
             if (!empty($userRoleList)) {
                 foreach ($userRoleList as $k => $v) {
