@@ -26,11 +26,11 @@ class UpdateAction extends AbstractController
 
     private $rules = [
         'id'            => 'required|integer',
-        'name'          => 'required|string',
-        'email'         => 'required|string',
-        'mobile'        => 'required|string',
-        'position'      => 'required|string',
-        'password'      => 'string',
+        'name'          => 'required|string|max:50',
+        'email'         => 'required|email|max:50',
+        'mobile'        => 'required|string|max:20',
+        'position'      => 'required|string|max:50',
+        'password'      => 'string|min:6|max:32',
         'role_id'       => 'string',
     ];
 

@@ -101,6 +101,18 @@ class UserLogic
     }
 
     /**
+     * 检查 status 字段
+     *
+     * @param $status
+     */
+    public function checkUserStatus($status)
+    {
+        if (!in_array($status, UserConstant::ALLOWED_USER_STATUS_LIST)) {
+            throw new AppException(AppErrorCode::REQUEST_PARAMS_INVALID, 'status 参数错误！');
+        }
+    }
+
+    /**
      * 创建
      *
      * @param $requestData
@@ -215,6 +227,10 @@ class UserLogic
 
         // 检查用户是否存在
         $user = $this->checkUser($id);
+        // 检查 status 字段
+        if (isset($requestData['status'])) {
+            $this->checkUserStatus($requestData['status']);
+        }
         // ROOT 用户不允许删除
         if ($user['root'] == UserConstant::IS_ROOT && isset($requestData['status']) && $requestData['status'] == UserConstant::USER_STATUS_DELETE) {
             throw new AppException(AppErrorCode::ROOT_USER_DELETE_ERROR);
