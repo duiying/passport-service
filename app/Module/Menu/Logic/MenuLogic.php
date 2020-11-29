@@ -55,6 +55,18 @@ class MenuLogic
     }
 
     /**
+     * 检查 status 字段
+     *
+     * @param $status
+     */
+    public function checkStatus($status)
+    {
+        if (!in_array($status, MenuConstant::ALLOWED_MENU_STATUS_LIST)) {
+            throw new AppException(AppErrorCode::REQUEST_PARAMS_INVALID, 'status 参数错误！');
+        }
+    }
+
+    /**
      * 创建
      *
      * @param $requestData
@@ -96,6 +108,11 @@ class MenuLogic
         $menu = $this->service->getLineByWhere(['id' => $id, 'status' => MenuConstant::MENU_STATUS_NORMAL]);
         if (empty($menu)) throw new AppException(AppErrorCode::MENU_NOT_EXIST_ERROR);
 
+        // 检查 status 字段
+        if (isset($requestData['status'])) {
+            $this->checkStatus($requestData['status']);
+        }
+
         // 如果是删除一级菜单，需要先删除下面的二级菜单
         if (isset($requestData['status']) && $requestData['status'] == MenuConstant::MENU_STATUS_DELETE && $menu['pid'] == 0) {
             $classBMenuList = $this->service->search(['pid' => $menu['id'], 'status' => MenuConstant::MENU_STATUS_NORMAL]);
@@ -115,9 +132,9 @@ class MenuLogic
      */
     public function search($requestData)
     {
-        // 一级菜单列表
+        // 如果有 pid 参数，查询指定 pid 下的菜单列表
         if (isset($requestData['pid'])) {
-            $classAMenuList = $this->service->search(['pid' => 0, 'status' => MenuConstant::MENU_STATUS_NORMAL]);
+            $classAMenuList = $this->service->search(['pid' => $requestData['pid'], 'status' => MenuConstant::MENU_STATUS_NORMAL]);
             return ['list' => $classAMenuList];
         }
 

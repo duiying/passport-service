@@ -27,9 +27,9 @@ class UpdateAction extends AbstractController
     private $rules = [
         'id'          => 'required|integer',
         'pid'         => 'required|integer',
-        'name'        => 'required|string',
-        'icon'        => 'required|string',
-        'url'         => 'string',
+        'name'        => 'required|string|max:20',
+        'icon'        => 'required|string|max:50',
+        'url'         => 'string|max:50',
         'sort'        => 'integer|min:1|max:999',
     ];
 
@@ -39,6 +39,7 @@ class UpdateAction extends AbstractController
         $requestData = $request->all();
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
+        $requestData['mtime'] = Util::now();
 
         $res = $this->logic->update($requestData);
         return $response->success($res);

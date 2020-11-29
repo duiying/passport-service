@@ -26,9 +26,9 @@ class CreateAction extends AbstractController
 
     private $rules = [
         'pid'         => 'required|integer',
-        'name'        => 'required|string',
-        'icon'        => 'required|string',
-        'url'         => 'string',
+        'name'        => 'required|string|max:20',
+        'icon'        => 'required|string|max:50',
+        'url'         => 'string|max:50',
         'sort'        => 'integer|min:1|max:999',
     ];
 
