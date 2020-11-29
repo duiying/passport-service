@@ -25,8 +25,8 @@ class CreateAction extends AbstractController
     public $validationFactory;
 
     private $rules = [
-        'name'          => 'required|string',
-        'url'           => 'required|string',
+        'name'          => 'required|string|max:50',
+        'url'           => 'required|string|max:2000',
         'sort'          => 'integer|min:1|max:999'
     ];
 

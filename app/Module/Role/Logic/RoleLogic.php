@@ -87,6 +87,18 @@ class RoleLogic
         if ($admin == RoleConstant::ADMIN_YES) throw new AppException(AppErrorCode::ROLE_ADMIN_UPDATE_ERROR);
     }
 
+    /**
+     * 检查 status 字段
+     *
+     * @param $status
+     */
+    public function checkStatus($status)
+    {
+        if (!in_array($status, RoleConstant::ALLOWED_ROLE_STATUS_LIST)) {
+            throw new AppException(AppErrorCode::REQUEST_PARAMS_INVALID, 'status 参数错误！');
+        }
+    }
+
     public function create($requestData)
     {
         // 权限
@@ -229,13 +241,14 @@ class RoleLogic
     {
         $id = $requestData['id'];
         unset($requestData['id']);
-var_dump($requestData);
         // 检查角色是否存在
         $role = $this->checkRole($id);
         // 超级管理员角色不允许更新
         $this->checkAdmin($role['admin']);
         // 检查角色名称是否重复
         if (isset($requestData['name'])) $this->checkNameRepeat($requestData['name'], $id);
+        // 检查 status 字段
+        if (isset($requestData['status'])) $this->checkStatus($requestData['status']);
 
         return $this->service->update(['id' => $id], $requestData);
     }

@@ -26,7 +26,7 @@ class UpdateAction extends AbstractController
 
     private $rules = [
         'id'            => 'required|integer',
-        'name'          => 'required|string',
+        'name'          => 'required|string|max:50',
         'sort'          => 'integer|min:1|max:999',
         'permission_id' => 'string',
         'menu_id'       => 'string',
@@ -39,7 +39,7 @@ class UpdateAction extends AbstractController
         $this->validationFactory->make($requestData, $this->rules)->validate();
         $requestData = Util::sanitize($requestData, $this->rules);
 
-        $requestData['mtime'] = date('Y-m-d H:i:s');
+        $requestData['mtime'] = Util::now();
 
         $res = $this->logic->update($requestData);
         return $response->success($res);

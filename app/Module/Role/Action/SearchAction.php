@@ -32,7 +32,6 @@ class SearchAction extends AbstractController
         'id'            => 'integer',
         'name'          => 'string',
         'admin'         => 'integer',
-        'status'        => 'integer'
     ];
 
     public function handle(RequestInterface $request, Response $response)

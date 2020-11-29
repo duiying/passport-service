@@ -31,6 +31,18 @@ class PermissionLogic
     }
 
     /**
+     * 检查 status 字段
+     *
+     * @param $status
+     */
+    public function checkStatus($status)
+    {
+        if (!in_array($status, PermissionConstant::ALLOWED_PERMISSION_STATUS_LIST)) {
+            throw new AppException(AppErrorCode::REQUEST_PARAMS_INVALID, 'status 参数错误！');
+        }
+    }
+
+    /**
      * 创建
      *
      * @param $requestData
@@ -67,6 +79,12 @@ class PermissionLogic
         $data   = $requestData;
         $id     = $requestData['id'];
         unset($data['id']);
+
+        // 检查 status 字段
+        if (isset($requestData['status'])) {
+            $this->checkStatus($requestData['status']);
+        }
+
         return $this->service->update(['id' => $id], $data);
     }
 
