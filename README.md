@@ -14,4 +14,4 @@
 
 数据表关系图如下图所示：  
 
-<div align=center><img src="https://raw.githubusercontent.com/duiying/passport-service/master/docs/权限服务数据表关系图.png" width="500"></div>   
+<div align=center><img src="https://raw.githubusercontent.com/duiying/passport-service/master/docs/权限服务数据表关系图.png" width="800"></div>   
