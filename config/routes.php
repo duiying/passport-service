@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 use HyperfPlus\Route\Route;
-
 use Hyperf\HttpServer\Router\Router;
+use Hyperf\Tracer\Middleware\TraceMiddleware;
+use HyperfPlus\Middleware\CorsMiddleware;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'HyperfPlus\Controller\IndexController@handle');
 
@@ -52,4 +53,4 @@ Router::addGroup('/v1/',function () {
     Router::addRoute(['POST'], 'role/create', Route::decoration('Role\Action\CreateAction'));
     Router::addRoute(['POST'], 'role/update', Route::decoration('Role\Action\UpdateAction'));
     Router::addRoute(['POST'], 'role/update_field', Route::decoration('Role\Action\UpdateFieldAction'));
-}, ['middleware' => [\HyperfPlus\Middleware\CorsMiddleware::class]]);
+}, ['middleware' => [TraceMiddleware::class, CorsMiddleware::class]]);
